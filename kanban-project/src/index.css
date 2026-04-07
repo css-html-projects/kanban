@@ -1,0 +1,21 @@
+:root {
+  --text: #bedce5;
+  --bg: #0e191a;
+  --border: #b0eeee;
+  --accent: #aa3bff;
+  --accent-bg: rgba(162, 218, 225, 0.1);
+}
+
+p, h1, h2, h3, h4, h5, h6, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  font-family: "Fira Sans", sans-serif;
+}
+html {
+  font-size: 16px;
+}
+
