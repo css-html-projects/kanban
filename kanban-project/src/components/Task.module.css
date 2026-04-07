@@ -14,8 +14,22 @@
 }
 .priority {
     color: var(--text);
-    background-color: var(--accent);
     border-radius: 1rem;
     padding: 0.3rem 0.6rem ;
     text-align: center;
+}
+.one {
+    background-color: #bb008f;
+}
+.two {
+    background-color: #ae00d5;
+}
+.three {
+    background-color: #7700d9;
+}
+.four {
+    background-color: #004cd9;
+}
+.five {
+    background-color: #00a3bb;
 }
