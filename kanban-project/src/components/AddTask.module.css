@@ -1,0 +1,57 @@
+
+.addTask {
+    background-color: var(--accent-bg);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    padding: 0.7rem;
+    width: 100%;
+    box-sizing: border-box;
+
+}
+
+.addTask:focus-within {
+    border: 1px solid var(--accent-border);
+}
+
+.inputTitle {
+    border: none;
+    color: var(--text);
+    background-color: transparent;
+    font-family: "Fira Sans", sans-serif;
+    flex: 4;
+    width: 100%;
+
+
+}
+
+.inputPriority {
+    border: none;
+    color: var(--text);
+    background-color: transparent;
+    font-family: "Fira Sans", sans-serif;
+    text-align: end;
+    flex: 1;
+}
+
+.inputTitle::placeholder {
+    color: var(--dark-text);
+
+}
+.inputPriority::placeholder {
+    color: var(--dark-text);
+    font-size: 0.5rem;
+}
+
+.inputTitle:focus, .inputPriority:focus {
+    border: none;
+    outline: none;
+}
+
+

@@ -1,8 +1,6 @@
 
 .column {
     background-color: var(--accent-bg);
-    padding: 1.5rem;
-    border-radius: 1rem;
     border: 1px solid var(--border);
 
     display: flex;
@@ -10,14 +8,27 @@
     gap: 1rem;
 
     flex: 1;
+    padding: 1.5rem;
+    border-radius: 1rem;
 
 }
+
 .columnTitle {
     color: var(--text);
-    letter-spacing: 0.2rem;
     font-weight: bold;
     font-size: 1.25rem;
-
+    letter-spacing: 0.2rem;
     text-align: center;
 }
 
+
+.btnAddTask {
+    background-color: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    text-align: center;
+    font-size: 1.25rem;
+    gap: 0.5rem;
+    padding: 0.7rem;
+}

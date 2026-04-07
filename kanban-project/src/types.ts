@@ -1,7 +1,7 @@
 export type Task = {
     id: string;
     title: string;
-    priority: number;
+    priority: 1 | 2 | 3 | 4 | 5;
 
 }
 

@@ -1,8 +1,10 @@
 :root {
   --text: #bedce5;
+  --dark-text: #98adb4;
   --bg: #0e191a;
   --border: #b0eeee;
-  --accent: #aa3bff;
+  --accent-border: #42c9c9;
+  --accent: #54afd0;
   --accent-bg: rgba(162, 218, 225, 0.1);
 }
 
