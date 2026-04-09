@@ -2,6 +2,8 @@ import Column from "./Column.tsx";
 import styles from "./Board.module.css";
 import type {Board} from "../types.ts";
 import {useEffect, useRef, useState} from "react";
+import { saveBoardToLocalStorage, loadBoardFromLocalStorage } from "../localStorage";
+import ModalColumn from "./ModalColumn.tsx";
 
 type Props = {
     data: Board;
@@ -11,14 +13,26 @@ type Props = {
 export function Board({data}: Props) {
 
 
-    const [board, setBoard] = useState<Board>(data);
+    const [board, setBoard] = useState<Board>(() => {
+
+        const saved = loadBoardFromLocalStorage();
+        return saved ?? data;
+    });
     const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newColumnName, setNewColumnName] = useState("");
-
+    const [draggedTask, setDraggedTask] = useState<{
+        taskId: string;
+        fromColumnId: string;
+    } | null>(null);
 
     const taskContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        saveBoardToLocalStorage(board);
+    }, [board]);
+
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -56,13 +70,13 @@ export function Board({data}: Props) {
         setSelectedTaskId(null);
     }
 
-    function addColumn() {
-        if (!newColumnName.trim()) return;
+    function addColumn(name: string) {
+        if (!name.trim()) return;
 
         const newId = `column-${Date.now()}`;
         const newColumn = {
             id: newId,
-            title: newColumnName,
+            title: name,
             taskIds: [],
         };
 
@@ -74,9 +88,6 @@ export function Board({data}: Props) {
             },
             columnOrder: [...prev.columnOrder, newId],
         }));
-
-        setNewColumnName("");
-        setIsModalOpen(false);
     }
 
     return (
@@ -100,6 +111,8 @@ export function Board({data}: Props) {
                             selectedTaskId={selectedTaskId}
                             setSelectedTaskId={setSelectedTaskId}
                             onDelete={onDelete}
+                            draggedTask={draggedTask}
+                            setDraggedTask={setDraggedTask}
                         />
 
                     );
@@ -107,23 +120,16 @@ export function Board({data}: Props) {
             </div>
 
             {isModalOpen && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modal}>
-                        <h3 className={styles.modalTitle}>Add new column</h3>
-                        <input
-                            className={styles.input}
-                            type="text"
-                            value={newColumnName}
-                            onChange={(e) => setNewColumnName(e.target.value)}
-                            placeholder="Column name"
-                        />
-                        <div className={styles.modalButtons}>
-                            <button className={styles.btnModal} onClick={() => setIsModalOpen(false)}>Cancel</button>
-
-                            <button className={styles.btnModal} onClick={() => addColumn()}>Submit</button>
-                        </div>
-                    </div>
-                </div>
+                <ModalColumn
+                    title="Add new column"
+                    initialValue={newColumnName}
+                    onCancel={() => setIsModalOpen(false)}
+                    onSave={(name) => {
+                        addColumn(name);
+                        setNewColumnName("");
+                        setIsModalOpen(false);
+                    }}
+                />
             )}
         </>
     );

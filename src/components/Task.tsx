@@ -8,8 +8,10 @@ type Props = {
     onSelect: () => void;
     onEdit: () => void;
     onDelete: () => void;
+    onDragStart: (taskId: string) => void;
+    onDragOver: (taskId: React.DragEvent<HTMLDivElement>) => void;
 }
-export default function Task({task, isSelected, onSelect, onEdit, onDelete}: Props) {
+export default function Task({task, isSelected, onSelect, onEdit, onDelete, onDragStart,onDragOver}: Props) {
 
 
     const priorityClassMap = {
@@ -22,15 +24,15 @@ export default function Task({task, isSelected, onSelect, onEdit, onDelete}: Pro
 
     return (
         <>
-            <div className={`${styles.task} ${isSelected && styles.selectedTask}`} onClick={onSelect} >
+            <div className={`${styles.task} ${isSelected && styles.selectedTask}`}
+                 draggable
+                 onDragStart={() => onDragStart(task.id)}
+                 onDragOver={(e) => onDragOver(e)}
+                 onClick={onSelect} >
                 <div className={styles.taskInfo}>
                 <p className={` ${styles.priority} ${priorityClassMap[task.priority as 1 | 2 | 3 | 4 | 5]}`}> {task.priority} </p>
                     <h3 className={styles.title}> {task.title} </h3> </div>
                 <ActionButtons isVisible={isSelected} onEdit={onEdit} onDelete={onDelete}/>
-
-
-
-
             </div>
         </>
     )
