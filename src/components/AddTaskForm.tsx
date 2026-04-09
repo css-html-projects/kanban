@@ -1,95 +1,137 @@
 import * as React from "react";
 import styles from "./AddTask.module.css";
-import type {Board} from "../types.ts";
-
+import type { Board, Task } from "../types.ts";
 
 type Props = {
     columnId: string;
     setBoard: React.Dispatch<React.SetStateAction<Board>>;
     setIsAdding: (value: boolean) => void;
+    setIsEditing: (value: string) => void;
+    mode?: "add" | "edit";
+    task?: Task;
 };
 
-export function AddTaskForm({columnId, setBoard, setIsAdding}: Props) {
+export function AddTaskForm({
+                                columnId,
+                                setBoard,
+                                setIsAdding,
+    setIsEditing,
+                                mode = "add",
+                                task
+                            }: Props) {
 
     const formRef = React.useRef<HTMLFormElement | null>(null);
 
-    const addTask = (e: React.FormEvent<HTMLFormElement>) => {
+    const [title, setTitle] = React.useState(task?.title || "");
+    const [priority, setPriority] = React.useState<1 | 2 | 3 | 4 | 5 | "">(
+        task?.priority ?? ""
+    );
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        const formData = new FormData(e.currentTarget);
-
-        const title = formData.get("title") as string;
-        const priority = Number(formData.get("priority")) as 1 | 2 | 3 | 4 | 5 || 1;
 
         if (!title.trim()) {
             setIsAdding(false);
+            setIsEditing('');
             return;
         }
 
-        const id = crypto.randomUUID();
+        const finalPriority: 1 | 2 | 3 | 4 | 5 =
+            priority === "" ? 1 : priority;
 
-        const newTask = {
-            id,
-            title,
-            priority,
-        };
+        if (mode === "edit" && task) {
 
-        setBoard(prev => {
-            const currentColumn = prev.columns[columnId];
-
-            return {
+            setBoard(prev => ({
                 ...prev,
                 tasks: {
                     ...prev.tasks,
-                    [id]: newTask,
-                },
-                columns: {
-                    ...prev.columns,
-                    [columnId]: {
-                        ...currentColumn,
-                        taskIds: [...currentColumn.taskIds, id],
-                    },
-                },
+                    [task.id]: {
+                        ...prev.tasks[task.id],
+                        title,
+                        priority: finalPriority,
+                    }
+                }
+            }));
+        } else {
+
+            const id = crypto.randomUUID();
+
+            const newTask: Task = {
+                id,
+                title,
+                priority: finalPriority,
             };
-        });
+
+            setBoard(prev => {
+                const currentColumn = prev.columns[columnId];
+
+                return {
+                    ...prev,
+                    tasks: {
+                        ...prev.tasks,
+                        [id]: newTask,
+                    },
+                    columns: {
+                        ...prev.columns,
+                        [columnId]: {
+                            ...currentColumn,
+                            taskIds: [...currentColumn.taskIds, id],
+                        },
+                    },
+                };
+            });
+        }
 
         setIsAdding(false);
-        e.currentTarget.reset();
+        setIsEditing('');
     };
 
     React.useEffect(() => {
-
         const handleClickOutside = (e: MouseEvent) => {
             if (formRef.current && !formRef.current.contains(e.target as Node)) {
-                const form = formRef.current;
-                const formData = new FormData(form);
-                const title = (formData.get("title") as string).trim();
 
-                if (title) {
-                    form.requestSubmit();
+                if (title.trim()) {
+                    formRef.current.requestSubmit();
                 } else {
                     setIsAdding(false);
+                    setIsEditing('');
                 }
             }
         };
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [setIsAdding]);
+    }, [title, setIsAdding, setIsEditing]);
 
     return (
-        <form className={styles.addTask}
-              onSubmit={addTask}
-              ref={formRef}>
+        <form
+            className={styles.addTask}
+            onSubmit={handleSubmit}
+            ref={formRef}
+        >
+            <input
+                type="text"
+                name="title"
+                className={styles.inputTitle}
+                placeholder="Add task..."
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                autoFocus
+            />
 
-            <input type="text" name="title"
-                   className={styles.inputTitle} placeholder="Add task..."/>
+            <input
+                type="number"
+                name="priority"
+                min="1"
+                max="5"
+                className={styles.inputPriority}
+                placeholder="Priority"
+                value={priority}
+                onChange={(e) =>
+                    setPriority(Number(e.target.value) as 1 | 2 | 3 | 4 | 5)
+                }
+            />
 
-            <input type="number" name="priority" min="1" max="5"
-                   className={styles.inputPriority}
-                   placeholder="Priority"/>
-
-            <button type="submit" style={{display: "none"}}/>
-
+            <button type="submit" style={{ display: "none" }} />
         </form>
     );
 }

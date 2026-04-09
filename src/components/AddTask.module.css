@@ -27,6 +27,7 @@
     font-family: "Fira Sans", sans-serif;
     flex: 4;
     width: 100%;
+    font-size: 1rem;
 
 
 }
@@ -36,7 +37,7 @@
     color: var(--text);
     background-color: transparent;
     font-family: "Fira Sans", sans-serif;
-    text-align: end;
+    text-align: center;
     flex: 1;
 }
 
