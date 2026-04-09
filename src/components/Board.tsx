@@ -14,6 +14,10 @@ export function Board({data}: Props) {
     const [board, setBoard] = useState<Board>(data);
     const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newColumnName, setNewColumnName] = useState("");
+
+
     const taskContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -29,7 +33,7 @@ export function Board({data}: Props) {
 
     function onDelete(taskId: string, columnId: string) {
         setBoard((prev) => {
-            const newTasks = { ...prev.tasks };
+            const newTasks = {...prev.tasks};
             delete newTasks[taskId];
 
             const column = prev.columns[columnId];
@@ -52,9 +56,35 @@ export function Board({data}: Props) {
         setSelectedTaskId(null);
     }
 
+    function addColumn() {
+        if (!newColumnName.trim()) return;
+
+        const newId = `column-${Date.now()}`;
+        const newColumn = {
+            id: newId,
+            title: newColumnName,
+            taskIds: [],
+        };
+
+        setBoard((prev) => ({
+            ...prev,
+            columns: {
+                ...prev.columns,
+                [newId]: newColumn,
+            },
+            columnOrder: [...prev.columnOrder, newId],
+        }));
+
+        setNewColumnName("");
+        setIsModalOpen(false);
+    }
+
     return (
         <>
-            <h2 className={styles.boardTitle}> My board</h2>
+            <header className={styles.header}>
+                <h2 className={styles.boardTitle}> My board</h2>
+                <button className={styles.btn} onClick={() => setIsModalOpen(true)}>Add column</button>
+            </header>
             <div className={styles.board} ref={taskContainerRef}>
 
                 {board.columnOrder.map((columnId) => {
@@ -71,9 +101,30 @@ export function Board({data}: Props) {
                             setSelectedTaskId={setSelectedTaskId}
                             onDelete={onDelete}
                         />
+
                     );
                 })}
             </div>
+
+            {isModalOpen && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modal}>
+                        <h3 className={styles.modalTitle}>Add new column</h3>
+                        <input
+                            className={styles.input}
+                            type="text"
+                            value={newColumnName}
+                            onChange={(e) => setNewColumnName(e.target.value)}
+                            placeholder="Column name"
+                        />
+                        <div className={styles.modalButtons}>
+                            <button className={styles.btnModal} onClick={() => setIsModalOpen(false)}>Cancel</button>
+
+                            <button className={styles.btnModal} onClick={() => addColumn()}>Submit</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

@@ -1,5 +1,6 @@
 import styles from "./Task.module.css";
 import type {Task} from "../types.ts";
+import ActionButtons from "./ActionButtons.tsx";
 
 type Props = {
     task: Task;
@@ -25,21 +26,10 @@ export default function Task({task, isSelected, onSelect, onEdit, onDelete}: Pro
                 <div className={styles.taskInfo}>
                 <p className={` ${styles.priority} ${priorityClassMap[task.priority as 1 | 2 | 3 | 4 | 5]}`}> {task.priority} </p>
                     <h3 className={styles.title}> {task.title} </h3> </div>
-                {isSelected && (
-                    <div className={styles.taskAction}>
-                        <button className={styles.btn}
-                                onClick={() => {
-                                    onEdit();
-                                }}
-                        >
-                            <i className="fa-solid fa-pen"></i>
-                        </button>
-                        <button className={`${styles.btn} ${styles.delete}`} onClick={onDelete}>
-                            <i className="fa-solid fa-circle-minus"></i>
-                        </button>
+                <ActionButtons isVisible={isSelected} onEdit={onEdit} onDelete={onDelete}/>
 
-                    </div>
-                )}
+
+
 
             </div>
         </>
